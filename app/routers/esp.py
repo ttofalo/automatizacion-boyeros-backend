@@ -63,7 +63,7 @@ def delete_esp(esp_id: str, db: Session = Depends(get_db)):
 @router.get("/{esp_id}/estado", response_model=List[Boyero])
 def get_esp_state(esp_id: str, db: Session = Depends(get_db)):
     """
-    Endpoint for ESP32 to poll configuration/state.
+    Endpoint for ESP32 to poll configuration/state. 
     Returns list of boyeros assigned to this ESP.
     """
     service = StateService(db)
