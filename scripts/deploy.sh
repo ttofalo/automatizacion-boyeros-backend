@@ -16,7 +16,8 @@ export PATH=$PATH:/home/admin/.local/bin
 
 echo "Instalando dependencias..."
 # Usar el pip del usuario (sin venv, coincide con el servicio systemd)
-pip install -r requirements.txt
+# Se agrega --break-system-packages porque estamos en un entorno gestionado
+pip install -r requirements.txt --break-system-packages
 
 echo "Reiniciando servicio..." 
 sudo systemctl restart boyeros-backend
