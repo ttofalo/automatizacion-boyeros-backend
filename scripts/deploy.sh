@@ -11,17 +11,12 @@ echo "Obteniendo últimos cambios..."
 git pull origin main
 
 
-# Validar/Crear entorno virtual
-if [ ! -d "venv" ]; then
-    echo "⚠️ venv no encontrado. Creando..."
-    python3 -m venv venv
-fi
-
-echo "Activando entorno virtual..."
-source venv/bin/activate
+# Asegurar que el PATH incluye los binarios locales del usuario (pip, uvicorn)
+export PATH=$PATH:/home/admin/.local/bin
 
 echo "Instalando dependencias..."
-python -m pip install -r requirements.txt
+# Usar el pip del usuario (sin venv, coincide con el servicio systemd)
+pip install -r requirements.txt
 
 echo "Reiniciando servicio..."
 sudo systemctl restart boyeros-backend
