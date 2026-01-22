@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.db.database import get_db
 from app.services.state_service import StateService
-from app.models.boyero import Boyero, BoyeroStateUpdate, BoyeroCreate
+from app.models.boyero import Boyero, BoyeroStateUpdate, BoyeroCreate, BoyeroUpdate
 from typing import List
 
 router = APIRouter()
@@ -22,6 +22,17 @@ def change_boyero_state(boyero_id: int, state: BoyeroStateUpdate, db: Session = 
     """
     service = StateService(db)
     updated = service.update_boyero_state(boyero_id, state.is_on)
+    if not updated:
+        raise HTTPException(status_code=404, detail="Boyero not found")
+    return updated
+
+@router.put("/{boyero_id}", response_model=Boyero)
+def update_boyero(boyero_id: int, boyero_update: BoyeroUpdate, db: Session = Depends(get_db)):
+    """
+    Update Boyero details.
+    """
+    service = StateService(db)
+    updated = service.update_boyero(boyero_id, boyero_update)
     if not updated:
         raise HTTPException(status_code=404, detail="Boyero not found")
     return updated

@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from typing import Optional
 
 class BoyeroBase(BaseModel):
     name: str
@@ -10,6 +11,12 @@ class BoyeroCreate(BoyeroBase):
 
 class BoyeroStateUpdate(BaseModel):
     is_on: bool
+
+class BoyeroUpdate(BaseModel):
+    name: Optional[str] = None
+    gpio_pin: Optional[int] = None
+    esp_id: Optional[str] = None
+    is_on: Optional[bool] = None
 
 class Boyero(BoyeroBase):
     id: int

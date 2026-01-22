@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from app.db.models import DBBoyero, DBESP32
-from app.models.boyero import BoyeroCreate, BoyeroStateUpdate, Boyero
+from app.models.boyero import BoyeroCreate, BoyeroStateUpdate, Boyero, BoyeroUpdate
 from app.models.esp import ESP32Create, ESP32, ESP32Update
 from typing import List, Optional
 
@@ -18,6 +18,21 @@ class StateService:
         boyero = self.get_boyero(boyero_id)
         if boyero:
             boyero.is_on = is_on
+            self.db.commit()
+            self.db.refresh(boyero)
+        return boyero
+
+    def update_boyero(self, boyero_id: int, boyero_update: BoyeroUpdate) -> Optional[DBBoyero]:
+        boyero = self.get_boyero(boyero_id)
+        if boyero:
+            if boyero_update.name is not None:
+                boyero.name = boyero_update.name
+            if boyero_update.gpio_pin is not None:
+                boyero.gpio_pin = boyero_update.gpio_pin
+            if boyero_update.esp_id is not None:
+                boyero.esp_id = boyero_update.esp_id
+            if boyero_update.is_on is not None:
+                boyero.is_on = boyero_update.is_on
             self.db.commit()
             self.db.refresh(boyero)
         return boyero
