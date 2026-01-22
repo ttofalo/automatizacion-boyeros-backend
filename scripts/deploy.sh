@@ -18,7 +18,7 @@ echo "Instalando dependencias..."
 # Usar el pip del usuario (sin venv, coincide con el servicio systemd)
 pip install -r requirements.txt
 
-echo "Reiniciando servicio..."
+echo "Reiniciando servicio..." 
 sudo systemctl restart boyeros-backend
 
 echo "¡Despliegue finalizado con éxito!"
