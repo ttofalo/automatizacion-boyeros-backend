@@ -10,8 +10,18 @@ cd "$PROJECT_DIR"
 echo "Obteniendo últimos cambios..."
 git pull origin main
 
+
+# Validar/Crear entorno virtual
+if [ ! -d "venv" ]; then
+    echo "⚠️ venv no encontrado. Creando..."
+    python3 -m venv venv
+fi
+
+echo "Activando entorno virtual..."
+source venv/bin/activate
+
 echo "Instalando dependencias..."
-pip install -r requirements.txt
+python -m pip install -r requirements.txt
 
 echo "Reiniciando servicio..."
 sudo systemctl restart boyeros-backend
