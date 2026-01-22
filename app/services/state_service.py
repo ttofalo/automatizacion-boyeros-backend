@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from app.db.models import DBBoyero, DBESP32
 from app.models.boyero import BoyeroCreate, BoyeroStateUpdate, Boyero
-from app.models.esp import ESP32Create, ESP32
+from app.models.esp import ESP32Create, ESP32, ESP32Update
 from typing import List, Optional
 
 class StateService:
@@ -59,6 +59,17 @@ class StateService:
         self.db.add(db_esp)
         self.db.commit()
         self.db.refresh(db_esp)
+        return db_esp
+
+    def update_esp(self, esp_id: str, esp_update: ESP32Update) -> Optional[DBESP32]:
+        db_esp = self.get_esp(esp_id)
+        if db_esp:
+            if esp_update.name is not None:
+                db_esp.name = esp_update.name
+            if esp_update.active is not None:
+                db_esp.active = esp_update.active
+            self.db.commit()
+            self.db.refresh(db_esp)
         return db_esp
 
     def delete_esp(self, esp_id: str) -> bool:

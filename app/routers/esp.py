@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from app.db.database import get_db
 from app.services.state_service import StateService
 from app.models.boyero import Boyero
-from app.models.esp import ESP32, ESP32Create
+from app.models.esp import ESP32, ESP32Create, ESP32Update
 from typing import List
 
 router = APIRouter()
@@ -37,6 +37,17 @@ def get_esp(esp_id: str, db: Session = Depends(get_db)):
     if not esp:
         raise HTTPException(status_code=404, detail="ESP32 not found")
     return esp
+
+@router.put("/{esp_id}", response_model=ESP32)
+def update_esp(esp_id: str, esp_update: ESP32Update, db: Session = Depends(get_db)):
+    """
+    Update ESP32 details.
+    """
+    service = StateService(db)
+    updated_esp = service.update_esp(esp_id, esp_update)
+    if not updated_esp:
+        raise HTTPException(status_code=404, detail="ESP32 not found")
+    return updated_esp
 
 @router.delete("/{esp_id}")
 def delete_esp(esp_id: str, db: Session = Depends(get_db)):
