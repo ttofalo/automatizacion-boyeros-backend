@@ -19,4 +19,13 @@ class ConnectionManager:
         for connection in self.active_connections:
             await connection.send_text(message)
 
+    async def broadcast_json(self, data: dict):
+        for connection in self.active_connections:
+            try:
+                await connection.send_json(data)
+            except Exception as e:
+                # Handle potential disconnection errors during broadcast if needed
+                print(f"Error broadcasting to client: {e}")
+                pass
+
 manager = ConnectionManager()

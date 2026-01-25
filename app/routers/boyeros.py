@@ -1,8 +1,9 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
 from sqlalchemy.orm import Session
 from app.db.database import get_db
 from app.services.state_service import StateService
 from app.models.boyero import Boyero, BoyeroStateUpdate, BoyeroCreate, BoyeroUpdate
+from app.services.websocket_manager import manager
 from typing import List
 
 router = APIRouter()
@@ -16,7 +17,7 @@ def read_boyeros(db: Session = Depends(get_db)):
     return service.get_boyeros()
 
 @router.patch("/{boyero_id}/estado", response_model=Boyero)
-def change_boyero_state(boyero_id: int, state: BoyeroStateUpdate, db: Session = Depends(get_db)):
+def change_boyero_state(boyero_id: int, state: BoyeroStateUpdate, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
     """
     Change the state of a specific boyero (ON/OFF).
     """
@@ -24,10 +25,16 @@ def change_boyero_state(boyero_id: int, state: BoyeroStateUpdate, db: Session = 
     updated = service.update_boyero_state(boyero_id, state.is_on)
     if not updated:
         raise HTTPException(status_code=404, detail="Boyero not found")
+    
+    # Broadcast update
+    # Convert DB model to Pydantic model then to dict to ensure serialization
+    boyero_data = Boyero.model_validate(updated).model_dump()
+    background_tasks.add_task(manager.broadcast_json, boyero_data)
+    
     return updated
 
 @router.put("/{boyero_id}", response_model=Boyero)
-def update_boyero(boyero_id: int, boyero_update: BoyeroUpdate, db: Session = Depends(get_db)):
+def update_boyero(boyero_id: int, boyero_update: BoyeroUpdate, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
     """
     Update Boyero details.
     """
@@ -35,6 +42,11 @@ def update_boyero(boyero_id: int, boyero_update: BoyeroUpdate, db: Session = Dep
     updated = service.update_boyero(boyero_id, boyero_update)
     if not updated:
         raise HTTPException(status_code=404, detail="Boyero not found")
+        
+    # Broadcast update
+    boyero_data = Boyero.model_validate(updated).model_dump()
+    background_tasks.add_task(manager.broadcast_json, boyero_data)
+    
     return updated
 
 @router.post("/", response_model=Boyero)
