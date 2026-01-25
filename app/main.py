@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.routers import esp, boyeros
+from app.routers import esp, boyeros, websockets
 from app.core.config import settings
 from app.db.database import engine, Base
 
@@ -21,6 +21,7 @@ if settings.BACKEND_CORS_ORIGINS:
 
 app.include_router(esp.router, prefix="/esp", tags=["esp"])
 app.include_router(boyeros.router, prefix="/boyeros", tags=["boyeros"])
+app.include_router(websockets.router, prefix="/ws", tags=["websockets"])
 
 @app.get("/")
 def root():
