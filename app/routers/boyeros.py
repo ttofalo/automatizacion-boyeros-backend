@@ -4,17 +4,17 @@ from app.db.database import get_db
 from app.services.state_service import StateService
 from app.models.boyero import Boyero, BoyeroStateUpdate, BoyeroCreate, BoyeroUpdate
 from app.services.websocket_manager import manager
-from typing import List
+from typing import List, Optional
 
 router = APIRouter()
 
 @router.get("/", response_model=List[Boyero])
-def read_boyeros(db: Session = Depends(get_db)):
+def read_boyeros(id: Optional[int] = None, db: Session = Depends(get_db)):
     """
     Get all boyeros.
     """
     service = StateService(db)
-    return service.get_boyeros()
+    return service.get_boyeros(id=id)
 
 @router.patch("/{boyero_id}/estado", response_model=Boyero)
 def change_boyero_state(boyero_id: int, state: BoyeroStateUpdate, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):

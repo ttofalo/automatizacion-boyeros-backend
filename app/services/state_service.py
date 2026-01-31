@@ -8,8 +8,11 @@ class StateService:
     def __init__(self, db: Session):
         self.db = db
 
-    def get_boyeros(self) -> List[DBBoyero]:
-        return self.db.query(DBBoyero).all()
+    def get_boyeros(self, id: Optional[int] = None) -> List[DBBoyero]:
+        query = self.db.query(DBBoyero)
+        if id is not None:
+            query = query.filter(DBBoyero.id == id)
+        return query.all()
 
     def get_boyero(self, boyero_id: int) -> Optional[DBBoyero]:
         return self.db.query(DBBoyero).filter(DBBoyero.id == boyero_id).first()
